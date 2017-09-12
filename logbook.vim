@@ -40,8 +40,6 @@ for i in range(len(vim.current.buffer)):
 		if dateFoundStr:
 			dateFound = datetime.datetime.strptime(dateFoundStr.group(1), "%Y-%m-%d %a %I:%M %p")
 			if dateFound < dateOld:
-				print "GOT HERE"
-				print dateFound.time()
 				cmd = "syntax match OLD '{0}'".format(dateFoundStr.group(1))
 				vim.command(cmd)
 	else:
