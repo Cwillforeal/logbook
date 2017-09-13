@@ -1,18 +1,24 @@
 " Vim script section
 " Set region of test that starts with space x to comment
-syn region  Comment   start="^ x "   end="$"
-syn region  String    start="^\w"    end="$"
+set t_Co=256
+syn region  DONE      start="^ x "   end="$"
+syn region  SECTIONS  start="^\w"    end="$"
 " Mark tab regions with x
-syn region  Comment   start="^\tx "  end="$"
+syn region  DONE      start="^\tx "  end="$"
+" Mark undone items
+syn region  UNDONE    start="^ - "   end="$"
+syn region  UNDONE    start="^\t- "  end="$"
 
 " Every time someone presses enter, include the date on next line (*DATE*)
 imap <CR> <CR> - <C-R>=strftime("(*%Y-%m-%d %a %I:%M %p*)")<CR><ESC>4\|i
 " Make o add the date as well
 map o $a<CR>
 
-colorscheme evening
-
+colorscheme molokai
 highlight OLD guifg=red ctermfg=red
+highlight UNDONE guifg=white ctermfg=white
+highlight DONE guifg=darkblue ctermfg=darkblue
+highlight SECTIONS guifg=brown ctermfg=brown
 
 " Check for python
 if !has('python3')
