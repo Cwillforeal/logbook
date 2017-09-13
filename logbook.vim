@@ -6,22 +6,22 @@ syn region  String    start="^\w"    end="$"
 syn region  Comment   start="^\tx "  end="$"
 
 " Every time someone presses enter, include the date on next line (*DATE*)
-imap <CR> <CR><C-R>=strftime("(*%Y-%m-%d %a %I:%M %p*)")<CR><ESC>0i
+imap <CR> <CR> - <C-R>=strftime("(*%Y-%m-%d %a %I:%M %p*)")<CR><ESC>4\|i
 " Make o add the date as well
 map o $a<CR>
 
 colorscheme evening
 
-highlight OLD guifg=red
+highlight OLD guifg=red ctermfg=red
 
 " Check for python
-if !has('python')
-	echo "Error: Required vim complied with +python"
+if !has('python3')
+	echo "Error: Required vim complied with +python3"
 	finish
 endif
 
 " Start python
-python << EOF
+python3 << EOF
 
 import vim
 import re
@@ -29,7 +29,6 @@ import datetime
 
 dnow=datetime.datetime.now()
 dateOld = dnow - datetime.timedelta(days = 5)
-print dateOld
 notDone = []
 done = []
 
