@@ -14,6 +14,8 @@ imap <CR> <CR> - <C-R>=strftime("(*%Y-%m-%d %a %I:%M %p*)")<CR><ESC>4\|i
 map o $a<CR>
 " Map F10 so it updates list
 map <F10> :py3 updateList() <CR>
+" Map <F1> to mark item as done
+map <F1> 0lxix<ESC> <F10>
 
 " Set coloring
 set background=dark

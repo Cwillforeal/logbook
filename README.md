@@ -20,3 +20,4 @@ For Windows:
 - Undone items start with a " - " or a "\t- "
 - When you finish with an item delete the '-' and replace witha 'x'
 - The list will sort after every restart or when pressing F10
+- <F1> will mark an item as done, except for indented
