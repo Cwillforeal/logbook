@@ -19,4 +19,4 @@ For Windows:
 - Items should be added with a CR or 'o'.  This will add the " - " and date that is needed
 - Undone items start with a " - " or a "\t- "
 - When you finish with an item delete the '-' and replace witha 'x'
-- The list will sort after every restart
+- The list will sort after every restart or when pressing F10

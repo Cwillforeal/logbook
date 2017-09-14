@@ -12,10 +12,11 @@ syn region  UNDONE    start="^\t- "  end="$"
 imap <CR> <CR> - <C-R>=strftime("(*%Y-%m-%d %a %I:%M %p*)")<CR><ESC>4\|i
 " Make o add the date as well
 map o $a<CR>
+" Map F10 so it updates list
+map <F10> :py3 updateList() <CR>
 
 " Set coloring
 set background=dark
-
 
 highlight Normal guibg=#333333 guifg=white
 highlight UNDONE guifg=white ctermfg=white
@@ -36,31 +37,38 @@ import vim
 import re
 import datetime
 
-dnow=datetime.datetime.now()
-dateOld = dnow - datetime.timedelta(days = 5)
-notDone = []
-done = []
+def sortSection(dateOld,notDone,done):
+	for i in range(len(vim.current.buffer)):
+		if re.search(r"^ - |^\t- ", vim.current.buffer[i]):
+			notDone.append(vim.current.buffer[i])
+			dateFoundStr = re.search(r"(?:[(][*])(.*)(?:[*][)])", vim.current.buffer[i])
+			if dateFoundStr:
+				dateFound = datetime.datetime.strptime(dateFoundStr.group(1), "%Y-%m-%d %a %I:%M %p")
+				if dateFound < dateOld:
+					cmd = "syntax match OLD '{0}' containedin=UNDONE".format(dateFoundStr.group(1))
+					vim.command(cmd)
+		else:
+			if re.search(r"^ x |^\tx ", vim.current.buffer[i]):
+				done.append(vim.current.buffer[i])
 
-for i in range(len(vim.current.buffer)):
-	if re.search(r"^ - |^\t- ", vim.current.buffer[i]):
-		notDone.append(vim.current.buffer[i])
-		dateFoundStr = re.search(r"(?:[(][*])(.*)(?:[*][)])", vim.current.buffer[i])
-		if dateFoundStr:
-			dateFound = datetime.datetime.strptime(dateFoundStr.group(1), "%Y-%m-%d %a %I:%M %p")
-			if dateFound < dateOld:
-				cmd = "syntax match OLD '{0}' containedin=UNDONE".format(dateFoundStr.group(1))
-				vim.command(cmd)
-	else:
-		if re.search(r"^ x |^\tx ", vim.current.buffer[i]):
-			done.append(vim.current.buffer[i])
+	return (notDone,done)
 
+def updateList():
+	dnow=datetime.datetime.now()
+	dateOld = dnow - datetime.timedelta(days = 5)
+	notDone = []
+	done = []
 
-del vim.current.buffer[1:]
+	notDone,done = sortSection(dateOld,notDone,done)
 
-for i in range(len(done)):
-	vim.current.buffer.append(done[i])
+	del vim.current.buffer[1:]
 
-for i in range(len(notDone)):
-	vim.current.buffer.append(notDone[i])
+	for i in range(len(done)):
+		vim.current.buffer.append(done[i])
+
+	for i in range(len(notDone)):
+		vim.current.buffer.append(notDone[i])
+
+updateList()
 
 EOF
