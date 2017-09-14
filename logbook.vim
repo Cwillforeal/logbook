@@ -1,6 +1,5 @@
 " Vim script section
 " Set region of test that starts with space x to comment
-set t_Co=256
 syn region  DONE      start="^ x "   end="$"
 syn region  SECTIONS  start="^\w"    end="$"
 " Mark tab regions with x
@@ -14,11 +13,14 @@ imap <CR> <CR> - <C-R>=strftime("(*%Y-%m-%d %a %I:%M %p*)")<CR><ESC>4\|i
 " Make o add the date as well
 map o $a<CR>
 
-colorscheme molokai
-highlight OLD guifg=red ctermfg=red
+" Set coloring
+set background=dark
+
+highlight Normal guibg=#333333
 highlight UNDONE guifg=white ctermfg=white
-highlight DONE guifg=darkblue ctermfg=darkblue
-highlight SECTIONS guifg=brown ctermfg=brown
+highlight DONE guifg=#1b6ae8 ctermfg=darkblue
+highlight SECTIONS guifg=#f77671 ctermfg=brown
+highlight OLD guifg=red ctermfg=red
 
 " Check for python
 if !has('python3')
@@ -45,7 +47,7 @@ for i in range(len(vim.current.buffer)):
 		if dateFoundStr:
 			dateFound = datetime.datetime.strptime(dateFoundStr.group(1), "%Y-%m-%d %a %I:%M %p")
 			if dateFound < dateOld:
-				cmd = "syntax match OLD '{0}'".format(dateFoundStr.group(1))
+				cmd = "syntax match OLD '{0}' containedin=UNDONE".format(dateFoundStr.group(1))
 				vim.command(cmd)
 	else:
 		if re.search(r"^ x |^\tx ", vim.current.buffer[i]):
