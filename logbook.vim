@@ -16,7 +16,7 @@ map o $a<CR>
 " Set coloring
 set background=dark
 
-highlight Normal guibg=#333333
+highlight Normal guibg=#333333 guifg=white
 highlight UNDONE guifg=white ctermfg=white
 highlight DONE guifg=#1b6ae8 ctermfg=darkblue
 highlight SECTIONS guifg=#f77671 ctermfg=brown
