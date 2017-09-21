@@ -1,7 +1,7 @@
 " Vim script section
 " Set region of test that starts with space x to comment
 syn region  DONE      start="^ x "   end="$"
-syn region  SECTIONS  start="^\w"    end="$"
+syn region  SECTIONS  start="^\~"    end="$"
 " Mark tab regions with x
 syn region  DONE      start="^\tx "  end="$"
 " Mark undone items
@@ -39,38 +39,53 @@ import vim
 import re
 import datetime
 
-def sortSection(dateOld,notDone,done):
-	for i in range(len(vim.current.buffer)):
-		if re.search(r"^ - |^\t- ", vim.current.buffer[i]):
-			notDone.append(vim.current.buffer[i])
-			dateFoundStr = re.search(r"(?:[(][*])(.*)(?:[*][)])", vim.current.buffer[i])
+def sortSection(dateOld,vimBuffOffset):
+	done = []
+	notDone = []
+	for line in vim.current.buffer[vimBuffOffset:]:
+		if re.search(r"^ - |^\t- ", line):
+			notDone.append(line)
+			dateFoundStr = re.search(r"(?:[(][*])(.*)(?:[*][)])", line)
 			if dateFoundStr:
 				dateFound = datetime.datetime.strptime(dateFoundStr.group(1), "%Y-%m-%d %a %I:%M %p")
 				if dateFound < dateOld:
 					cmd = "syntax match OLD '{0}' containedin=UNDONE".format(dateFoundStr.group(1))
 					vim.command(cmd)
+		elif re.search(r"^ x |^\tx ", line):
+			done.append(line)
+		elif re.search(r"^\~", line):
+			return(notDone,done,vimBuffOffset)	
 		else:
-			if re.search(r"^ x |^\tx ", vim.current.buffer[i]):
-				done.append(vim.current.buffer[i])
+			print("Broken syntax")
+			quit()
+		vimBuffOffset+=1
 
-	return (notDone,done)
+	vimBuffOffset+=1
+	return (notDone,done,vimBuffOffset)
 
 def updateList():
 	dnow=datetime.datetime.now()
 	dateOld = dnow - datetime.timedelta(days = 5)
 	notDone = []
 	done = []
+	newVimBuff = []
+	vimBuffOffset = 0
+	vimBuffLen = len(vim.current.buffer)
 
-	notDone,done = sortSection(dateOld,notDone,done)
+	while vimBuffOffset < vimBuffLen: 
+		for line in vim.current.buffer[vimBuffOffset:]:
+			if re.search(r"^\~", line):
+				newVimBuff.append(line)
+				vimBuffOffset += 1
+				notDone,done,vimBuffOffset = sortSection(dateOld,vimBuffOffset)
+				for i in range(len(done)):
+					newVimBuff.append(done[i])
 
-	del vim.current.buffer[1:]
+				for i in range(len(notDone)):
+					newVimBuff.append(notDone[i])
 
-	for i in range(len(done)):
-		vim.current.buffer.append(done[i])
-
-	for i in range(len(notDone)):
-		vim.current.buffer.append(notDone[i])
-
+	for i in range(len(newVimBuff)):
+		vim.current.buffer[i] = newVimBuff[i]
 updateList()
 
 EOF
